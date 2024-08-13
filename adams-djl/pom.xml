@@ -81,9 +81,27 @@
       <type>test-jar</type>
     </dependency>
 
+    <!--dependency>
+      <groupId>ai.djl</groupId>
+      <artifactId>model-zoo</artifactId>
+      <version>${djl.version}</version>
+    </dependency-->
+
     <dependency>
       <groupId>ai.djl</groupId>
       <artifactId>api</artifactId>
+      <version>${djl.version}</version>
+    </dependency>
+
+    <!--dependency>
+      <groupId>ai.djl</groupId>
+      <artifactId>basicdataset</artifactId>
+      <version>${djl.version}</version>
+    </dependency-->
+
+    <dependency>
+      <groupId>ai.djl.pytorch</groupId>
+      <artifactId>pytorch-engine</artifactId>
       <version>${djl.version}</version>
     </dependency>
 

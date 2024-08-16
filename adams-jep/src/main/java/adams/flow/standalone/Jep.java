@@ -29,6 +29,7 @@ import adams.core.scripting.JepScriptingEngine;
 import adams.core.scripting.JepScriptlet;
 import adams.core.scripting.JepUtils;
 import adams.flow.control.VariableNameStorageNamePair;
+import adams.flow.core.ActorUtils;
 
 /**
  <!-- globalinfo-start -->
@@ -36,7 +37,9 @@ import adams.flow.control.VariableNameStorageNamePair;
  * The 'inputs' are items to retrieve from storage and store globally in the interpreter before executing the script.<br>
  * The 'outputs' are variables to put back into storeage.<br>
  * For more information on Jep see:<br>
- * https:&#47;&#47;github.com&#47;ninia&#47;jep&#47;
+ * https:&#47;&#47;github.com&#47;ninia&#47;jep&#47;<br>
+ * <br>
+ * By default, a global Jep scripting engine is used for executing scripts sequentially. Using a adams.flow.standalone.JepEngine actor in the flow allows to avoid this bottleneck, but the user needs to make sure that variables are unique across the scripts run in parallel.
  * <br><br>
  <!-- globalinfo-end -->
  *
@@ -123,6 +126,9 @@ public class Jep
   /** the output values. */
   protected VariableNameStorageNamePair[] m_Outputs;
 
+  /** the engine in use. */
+  protected transient JepEngine m_Engine;
+
   /**
    * Returns a string describing the object.
    *
@@ -135,7 +141,11 @@ public class Jep
 	     + "before executing the script.\n"
 	     + "The 'outputs' are variables to put back into storeage.\n"
 	     + "For more information on Jep see:\n"
-	     + JepUtils.projectURL();
+	     + JepUtils.projectURL() + "\n\n"
+	     + "By default, a global Jep scripting engine is used for executing scripts sequentially. "
+	     + "Using a " + Utils.classToString(JepEngine.class) + " actor in the flow allows to avoid "
+	     + "this bottleneck, but the user needs to make sure that variables are unique across "
+	     + "the scripts run in parallel.";
   }
 
   /**
@@ -309,6 +319,23 @@ public class Jep
   }
 
   /**
+   * Initializes the item for flow execution.
+   *
+   * @return		null if everything is fine, otherwise error message
+   */
+  @Override
+  public String setUp() {
+    String	result;
+
+    result = super.setUp();
+
+    if (result == null)
+      m_Engine = (JepEngine) ActorUtils.findClosestType(this, JepEngine.class, true);
+
+    return result;
+  }
+
+  /**
    * Executes the flow item.
    *
    * @return null if everything is fine, otherwise error message
@@ -326,7 +353,11 @@ public class Jep
       scriplet = new JepScriptlet(getFullName(), m_ScriptFile, m_Inputs, m_Outputs, null);
     scriplet.setFlowContext(this);
     scriplet.setLoggingLevel(getLoggingLevel());
-    JepScriptingEngine.getSingleton().add(scriplet);
+
+    if (m_Engine == null)
+      JepScriptingEngine.getSingleton().add(scriplet);
+    else
+      m_Engine.getEngine().add(scriplet);
 
     while (!isStopped() && !scriplet.hasFinished())
       Utils.wait(this, 1000, 100);

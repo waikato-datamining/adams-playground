@@ -64,6 +64,9 @@ Jep embeds CPython in Java through JNI\cite{jep}.
 \section{Flow}
 The following standalones are available:
 \begin{tight_itemize}
+	\item \textit{JepEngine} -- provides a local scripting engine for executing
+	scripts instead of using the global one; parallel executed scripts must ensure
+	that variable names do not interfere with each other
 	\item \textit{Jep} -- executes the script (inline or external)
 \end{tight_itemize}
 The following sources are available:

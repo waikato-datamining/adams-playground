@@ -44,9 +44,10 @@ public class JepScriptingEngine
   /**
    * Initializes the engine.
    */
-  protected JepScriptingEngine() {
+  public JepScriptingEngine() {
     m_ProcessingThread = getProcessingThread();
     m_ProcessingThread.start();
+    BackgroundScriptingEngineRegistry.getSingleton().register(this);
   }
 
   /**
@@ -80,6 +81,7 @@ public class JepScriptingEngine
   public void stopEngine() {
     getProcessingThread().stopExecution();
     getProcessingThread().clear();
+    BackgroundScriptingEngineRegistry.getSingleton().deregister(this);
   }
 
   /**
@@ -88,10 +90,8 @@ public class JepScriptingEngine
    * @return		the engine
    */
   public static synchronized JepScriptingEngine getSingleton() {
-    if (m_Singleton == null) {
+    if (m_Singleton == null)
       m_Singleton = new JepScriptingEngine();
-      BackgroundScriptingEngineRegistry.getSingleton().register(m_Singleton);
-    }
 
     return m_Singleton;
   }

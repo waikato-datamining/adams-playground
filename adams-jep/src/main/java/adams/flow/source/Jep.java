@@ -30,7 +30,9 @@ import adams.core.scripting.JepScriptingEngine;
 import adams.core.scripting.JepScriptlet;
 import adams.core.scripting.JepUtils;
 import adams.flow.control.VariableNameStorageNamePair;
+import adams.flow.core.ActorUtils;
 import adams.flow.core.Token;
+import adams.flow.standalone.JepEngine;
 
 import java.util.Map;
 
@@ -41,7 +43,9 @@ import java.util.Map;
  * The 'outputs' are variables to put back into storeage.<br>
  * The 'forwards' are variables to forward as a map in the flow.<br>
  * For more information on Jep see:<br>
- * https:&#47;&#47;github.com&#47;ninia&#47;jep&#47;
+ * https:&#47;&#47;github.com&#47;ninia&#47;jep&#47;<br>
+ * <br>
+ * By default, a global Jep scripting engine is used for executing scripts sequentially. Using a adams.flow.standalone.JepEngine actor in the flow allows to avoid this bottleneck, but the user needs to make sure that variables are unique across the scripts run in parallel.
  * <br><br>
  <!-- globalinfo-end -->
  *
@@ -140,6 +144,9 @@ public class Jep
   /** the forwarded values. */
   protected BaseString[] m_Forwards;
 
+  /** the engine in use. */
+  protected transient JepEngine m_Engine;
+
   /**
    * Returns a string describing the object.
    *
@@ -153,7 +160,11 @@ public class Jep
 	     + "The 'outputs' are variables to put back into storeage.\n"
 	     + "The 'forwards' are variables to forward as a map in the flow.\n"
 	     + "For more information on Jep see:\n"
-	     + JepUtils.projectURL();
+	     + JepUtils.projectURL() + "\n\n"
+	     + "By default, a global Jep scripting engine is used for executing scripts sequentially. "
+	     + "Using a " + Utils.classToString(JepEngine.class) + " actor in the flow allows to avoid "
+	     + "this bottleneck, but the user needs to make sure that variables are unique across "
+	     + "the scripts run in parallel.";
   }
 
   /**
@@ -373,11 +384,11 @@ public class Jep
   /**
    * Initializes the item for flow execution.
    *
-   * @return		null if everything is fine, otherwise error message
+   * @return null if everything is fine, otherwise error message
    */
   @Override
   public String setUp() {
-    String	result;
+    String result;
 
     result = super.setUp();
 
@@ -385,6 +396,9 @@ public class Jep
       if (m_Forwards.length == 0)
 	result = "No variables specified ('forwards') that will be output after the scripts executes!";
     }
+
+    if (result == null)
+      m_Engine = (JepEngine) ActorUtils.findClosestType(this, JepEngine.class, true);
 
     return result;
   }
@@ -408,7 +422,11 @@ public class Jep
       scriplet = new JepScriptlet(getFullName(), m_ScriptFile, m_Inputs, m_Outputs, m_Forwards);
     scriplet.setFlowContext(this);
     scriplet.setLoggingLevel(getLoggingLevel());
-    JepScriptingEngine.getSingleton().add(scriplet);
+
+    if (m_Engine == null)
+      JepScriptingEngine.getSingleton().add(scriplet);
+    else
+      m_Engine.getEngine().add(scriplet);
 
     while (!isStopped() && !scriplet.hasFinished())
       Utils.wait(this, 1000, 100);

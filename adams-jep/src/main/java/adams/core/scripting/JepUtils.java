@@ -33,12 +33,39 @@ public class JepUtils {
   /** the global configuration for the shared interpreters. */
   protected static JepConfig m_SharedInterpreterConfig;
 
+  /** whether we checked for jep presence. */
+  protected static Boolean m_Present;
+
   /**
-   * Returns an instance of a shared interpreter. Ensure
+   * Returns whether Jep is present.
    *
-   * @return		the instance
+   * @return true if available
    */
-  public static synchronized SharedInterpreter getSharedInterpreter() {
+  public synchronized boolean isPresent() {
+    if (m_Present == null) {
+      try {
+	try (SharedInterpreter interpreter = JepUtils.getSharedInterpreter()) {
+	  interpreter.exec("import importlib.util");
+	  try {
+	    interpreter.exec("if (importlib.util.find_spec('jep') is None): raise Exception('jep not installed! Use: pip install jep')");
+	    m_Present = true;
+	  }
+	  catch (Exception e) {
+	    m_Present = false;
+	  }
+	}
+      }
+      catch (Exception e) {
+	m_Present = false;
+      }
+    }
+    return m_Present;
+  }
+
+  /**
+   * Configures the shared interpeters.
+   */
+  public static synchronized void configureSharedInterpeter() {
     if (m_SharedInterpreterConfig == null) {
       m_SharedInterpreterConfig = new JepConfig();
       // ensure that Python's stdout/stderr are printed in IDE
@@ -47,6 +74,24 @@ public class JepUtils {
       // set global config
       SharedInterpreter.setConfig(m_SharedInterpreterConfig);
     }
+  }
+
+  /**
+   * Returns the shared interpreter instance.
+   *
+   * @return		the instance
+   */
+  public static synchronized SharedInterpreter getSharedInterpreter() {
+    configureSharedInterpeter();
     return new SharedInterpreter();
+  }
+
+  /**
+   * Returns the Jep project URL.
+   *
+   * @return		the URL
+   */
+  public static String projectURL() {
+    return "https://github.com/ninia/jep/";
   }
 }

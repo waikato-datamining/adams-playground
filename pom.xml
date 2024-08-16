@@ -29,6 +29,5 @@
 
   <modules>
     <module>adams-djl</module>
-    <module>adams-jep</module>
   </modules>
 </project>

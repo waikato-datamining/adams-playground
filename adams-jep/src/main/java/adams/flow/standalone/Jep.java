@@ -29,7 +29,6 @@ import adams.core.scripting.JepScriptingEngine;
 import adams.core.scripting.JepScriptlet;
 import adams.core.scripting.JepUtils;
 import adams.flow.control.VariableNameStorageNamePair;
-import jep.SharedInterpreter;
 
 /**
  <!-- globalinfo-start -->
@@ -123,9 +122,6 @@ public class Jep
 
   /** the output values. */
   protected VariableNameStorageNamePair[] m_Outputs;
-
-  /** the interpreter. */
-  protected transient SharedInterpreter m_Interpreter;
 
   /**
    * Returns a string describing the object.

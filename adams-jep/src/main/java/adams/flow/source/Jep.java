@@ -31,7 +31,6 @@ import adams.core.scripting.JepScriptlet;
 import adams.core.scripting.JepUtils;
 import adams.flow.control.VariableNameStorageNamePair;
 import adams.flow.core.Token;
-import jep.SharedInterpreter;
 
 import java.util.Map;
 
@@ -140,9 +139,6 @@ public class Jep
 
   /** the forwarded values. */
   protected BaseString[] m_Forwards;
-
-  /** the interpreter. */
-  protected transient SharedInterpreter m_Interpreter;
 
   /**
    * Returns a string describing the object.

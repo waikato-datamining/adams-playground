@@ -29,5 +29,6 @@
 
   <modules>
     <module>adams-djl</module>
+    <module>adams-git</module>
   </modules>
 </project>

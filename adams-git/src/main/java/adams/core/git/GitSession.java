@@ -20,6 +20,7 @@
 
 package adams.core.git;
 
+import adams.core.CleanUpHandler;
 import adams.core.io.FileUtils;
 import adams.core.logging.CustomLoggingLevelObject;
 import org.eclipse.jgit.api.Git;
@@ -36,7 +37,8 @@ import java.util.Map;
  * @author fracpete (fracpete at waikato dot ac dot nz)
  */
 public class GitSession
-  extends CustomLoggingLevelObject {
+  extends CustomLoggingLevelObject
+  implements CleanUpHandler {
 
   private static final long serialVersionUID = -1973439331943188604L;
 
@@ -141,6 +143,16 @@ public class GitSession
     }
 
     return (m_Controlled.get(path) instanceof Git);
+  }
+
+  /**
+   * Cleans up data structures, frees up memory.
+   */
+  public void cleanUp() {
+    for (Git git: m_Repos.values())
+      git.close();
+    m_Repos.clear();
+    m_Controlled.clear();
   }
 
   /**

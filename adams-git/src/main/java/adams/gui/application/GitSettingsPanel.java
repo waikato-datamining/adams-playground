@@ -43,11 +43,14 @@ public class GitSettingsPanel
     addPropertyType("KnownHosts", PropertyType.FILE_ABSOLUTE);
     addPropertyType("User", PropertyType.STRING);
     addPropertyType("Email", PropertyType.STRING);
+    addPropertyType("LoggingLevel", PropertyType.LIST);
+    setList("LoggingLevel", new String[]{"OFF", "SEVERE", "WARNING", "INFO", "CONFIG", "FINE", "FINER", "FINEST"});
     setPropertyOrder(new String[]{
       "SshDir",
       "KnownHosts",
       "User",
       "Email",
+      "LoggingLevel",
     });
     setPreferences(Environment.getInstance().read(GitDefinition.KEY));
   }

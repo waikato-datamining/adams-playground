@@ -21,6 +21,7 @@ package adams.core.git;
 
 import adams.core.Properties;
 import adams.core.io.PlaceholderFile;
+import adams.core.logging.LoggingLevel;
 import adams.env.Environment;
 import adams.env.GitDefinition;
 import org.eclipse.jgit.util.FS;
@@ -49,6 +50,9 @@ public class GitSettingsHelper {
 
   /** the email. */
   public final static String EMAIL = "Email";
+
+  /** the logging level. */
+  public final static String LOGGING_LEVEL = "LoggingLevel";
 
   /** the singleton. */
   protected static GitSettingsHelper m_Singleton;
@@ -244,6 +248,20 @@ public class GitSettingsHelper {
   public void setEmail(String value) {
     m_Modified = true;
     m_Properties.setProperty(EMAIL, value);
+  }
+
+  /**
+   * Returns the email for commits.
+   *
+   * @return		the email
+   */
+  public LoggingLevel getLoggingLevel() {
+    try {
+      return LoggingLevel.valueOf(m_Properties.getProperty(LOGGING_LEVEL, "INFO"));
+    }
+    catch (Exception e) {
+      return LoggingLevel.INFO;
+    }
   }
 
   /**

@@ -20,11 +20,11 @@
 
 package adams.gui.flow.menu.git;
 
+import adams.core.git.GitSettingsHelper;
 import adams.core.logging.LoggingHelper;
+import adams.core.logging.LoggingLevel;
 import adams.gui.flow.menu.AbstractFlowEditorMenuItem;
 import org.eclipse.jgit.api.Git;
-
-import java.util.logging.Level;
 
 /**
  * Ancestor for menuitems in the git sub-menu.
@@ -44,9 +44,13 @@ public abstract class AbstractFlowEditorGitMenuItem
    */
   @Override
   protected void initialize() {
+    LoggingLevel	level;
+
     super.initialize();
-    if (!LoggingHelper.isAtLeast(getLogger(), Level.INFO))
-      getLogger().setLevel(Level.INFO);
+
+    level = GitSettingsHelper.getSingleton().getLoggingLevel();
+    if (!LoggingHelper.isAtLeast(getLogger(), level.getLevel()))
+      getLogger().setLevel(level.getLevel());
   }
 
   /**

@@ -27,3 +27,7 @@ User=
 # The email to use for commits, overrides .gitconfig settings
 # (email address)
 Email=
+
+# The default logging level for git operations
+# (OFF|SEVERE|WARNING|INFO|CONFIG|FINE|FINER|FINEST)
+LoggingLevel=INFO

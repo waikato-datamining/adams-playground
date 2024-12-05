@@ -20,7 +20,7 @@
 
 package adams.gui.flow.menu.git;
 
-import adams.core.git.GitSettingsHelper;
+import adams.core.git.GitSession;
 import adams.gui.action.AbstractBaseAction;
 import adams.gui.core.GUIHelper;
 import adams.gui.flow.FlowPanelNotificationArea.NotificationType;
@@ -61,7 +61,7 @@ public class Pull
 	      // do we need ssh key?
 	      if (url.startsWith("git@")) {
 		cmd.setTransportConfigCallback(transport -> ((SshTransport) transport).setSshSessionFactory(
-		  GitSettingsHelper.getSingleton().getSshdSessionFactory()));
+		  GitSession.getSingleton().getSshdSessionFactory()));
 	      }
 	      PullResult result = cmd.call();
 	      getLogger().info(result.toString());

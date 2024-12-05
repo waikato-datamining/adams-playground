@@ -21,12 +21,20 @@
 package adams.core.git;
 
 import adams.core.CleanUpHandler;
+import adams.core.base.BasePassword;
 import adams.core.io.FileUtils;
 import adams.core.logging.CustomLoggingLevelObject;
+import adams.gui.core.GUIHelper;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.RepositoryBuilder;
+import org.eclipse.jgit.transport.URIish;
+import org.eclipse.jgit.transport.sshd.IdentityPasswordProvider;
+import org.eclipse.jgit.transport.sshd.SshdSessionFactory;
+import org.eclipse.jgit.transport.sshd.SshdSessionFactoryBuilder;
+import org.eclipse.jgit.util.FS;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,12 +59,16 @@ public class GitSession
   /** the singleton. */
   protected static GitSession m_Singleton;
 
+  /** for keeping track of passwords per ssh key. */
+  protected Map<URIish,char[]> m_Passwords;
+
   /**
    * Initializes the session object.
    */
   protected GitSession() {
     m_Repos      = new HashMap<>();
     m_Controlled = new HashMap<>();
+    m_Passwords  = new HashMap<>();
   }
 
   /**
@@ -146,13 +158,77 @@ public class GitSession
   }
 
   /**
+   * Returns the password for the ssh key.
+   *
+   * @param uri		the URI of the ssh key
+   * @return		the key or null if none stored yet
+   */
+  public char[] getPassword(URIish uri) {
+    return m_Passwords.get(uri);
+  }
+
+  /**
+   * Returns the password for the ssh key and prompts the user if not yet stored.
+   *
+   * @param uri		the URI of the ssh key
+   * @return		the key or null if none stored yet
+   */
+  public char[] getPasswordOrPrompt(URIish uri) {
+    char[]		result;
+    BasePassword password;
+
+    result = m_Passwords.get(uri);
+
+    if (result == null) {
+      password = GUIHelper.showPasswordDialog(null);
+      if (password != null)
+	setPassword(uri, password.getValue().toCharArray());
+      result = getPassword(uri);
+    }
+
+    return result;
+  }
+
+  /**
+   * Returns a sshd session factory that will prompt the user for
+   * a password for each ssh key in use.
+   *
+   * @return		the factory
+   */
+  public SshdSessionFactory getSshdSessionFactory() {
+    return new SshdSessionFactoryBuilder()
+	     .setPreferredAuthentications("publickey")
+	     .setHomeDirectory(FS.DETECTED.userHome())
+	     .setSshDirectory(GitSettingsHelper.getSingleton().getSshDirFile().getAbsoluteFile())
+	     .setKeyPasswordProvider(cp -> new IdentityPasswordProvider(cp) {
+	       @Override
+	       protected char[] getPassword(URIish uri, String message) {
+		 return GitSession.getSingleton().getPasswordOrPrompt(uri);
+	       }
+	     }).build(null);
+  }
+
+  /**
+   * Sets the password for the ssh key.
+   *
+   * @param uri		the URI of the ssh key
+   * @param password    the password for the key
+   */
+  public void setPassword(URIish uri, char[] password) {
+    m_Passwords.put(uri, password);
+  }
+
+  /**
    * Cleans up data structures, frees up memory.
    */
   public void cleanUp() {
     for (Git git: m_Repos.values())
       git.close();
+    for (char[] password: m_Passwords.values())
+      Arrays.fill(password, '0');
     m_Repos.clear();
     m_Controlled.clear();
+    m_Passwords.clear();
   }
 
   /**

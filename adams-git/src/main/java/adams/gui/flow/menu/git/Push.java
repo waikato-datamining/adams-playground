@@ -14,28 +14,31 @@
  */
 
 /*
- * Add.java
+ * Push.java
  * Copyright (C) 2024 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.gui.flow.menu.git;
 
-import adams.core.io.FileUtils;
+import adams.core.git.GitSettingsHelper;
 import adams.gui.action.AbstractBaseAction;
 import adams.gui.core.GUIHelper;
-import org.eclipse.jgit.api.Status;
+import adams.gui.flow.FlowPanelNotificationArea.NotificationType;
+import org.eclipse.jgit.api.PushCommand;
+import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RemoteRefUpdate;
+import org.eclipse.jgit.transport.SshTransport;
 
 import javax.swing.SwingWorker;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.util.logging.Level;
 
 /**
- * Performs a "git add".
+ * Performs a "git push".
  *
  * @author fracpete (fracpete at waikato dot ac dot nz)
  */
-public class Add
+public class Push
   extends AbstractFlowEditorGitMenuItem {
 
   private static final long serialVersionUID = -2869403192412073396L;
@@ -47,22 +50,34 @@ public class Add
    */
   @Override
   protected AbstractBaseAction newAction() {
-    return new AbstractBaseAction("Add", "add") {
+    return new AbstractBaseAction("Push", "arrow_skip_up") {
       @Override
       protected void doActionPerformed(ActionEvent e) {
 	SwingWorker worker = new SwingWorker() {
 	  @Override
 	  protected Object doInBackground() throws Exception {
-	    String absFile = m_Owner.getCurrentFile().getAbsolutePath();
-	    String relPath = FileUtils.relativePath(m_Git.getRepository().getWorkTree(), m_Owner.getCurrentFile());
 	    try {
-	      m_Git.add()
-		.addFilepattern(relPath)
-		.call();
+	      PushCommand cmd = m_Git.push();
+	      String url = m_Git.getRepository().getConfig().getString("remote", "origin", "url");
+	      // do we need ssh key?
+	      if (url.startsWith("git@")) {
+		cmd.setTransportConfigCallback(transport -> ((SshTransport) transport).setSshSessionFactory(
+		  GitSettingsHelper.getSingleton().getSshdSessionFactory()));
+	      }
+	      Iterable<PushResult> results = cmd.call();
+	      StringBuilder combined = new StringBuilder();
+	      for (PushResult result: results) {
+		if (combined.length() > 0)
+		  combined.append("\n");
+		for (RemoteRefUpdate update: result.getRemoteUpdates())
+		  combined.append(update).append("\n");
+	      }
+	      getLogger().info(combined.toString());
+	      getOwner().getCurrentPanel().showNotification(combined.toString(), NotificationType.INFO);
 	    }
 	    catch (Exception ex) {
-	      getLogger().log(Level.SEVERE, "Failed to add: " + absFile, e);
-	      GUIHelper.showErrorMessage(m_Owner, "Failed to add:\n" + absFile, ex);
+	      getLogger().log(Level.SEVERE, "Failed to push: " + m_Git.getRepository().getWorkTree(), e);
+	      GUIHelper.showErrorMessage(m_Owner, "Failed to push: " + m_Git.getRepository().getWorkTree(), ex);
 	    }
 	    return null;
 	  }
@@ -77,21 +92,6 @@ public class Add
    */
   @Override
   public void update() {
-    Status 	status;
-    File 	file;
-    String 	relPath;
-
-    file    = m_Owner.getCurrentFile();
-    relPath = FileUtils.relativePath(m_Git.getRepository().getWorkTree(), file);
-    try {
-      status = m_Git.status()
-		 .addPath(relPath)
-		 .call();
-      m_Action.setEnabled(status.getUntracked().contains(relPath));
-    }
-    catch (Exception e) {
-      m_Action.setEnabled(false);
-      getLogger().log(Level.SEVERE, "Failed to query status of repo!", e);
-    }
+    m_Action.setEnabled(m_Git != null);
   }
 }

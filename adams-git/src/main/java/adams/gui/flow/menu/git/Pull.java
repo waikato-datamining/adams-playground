@@ -14,31 +14,30 @@
  */
 
 /*
- * Commit.java
+ * Pull.java
  * Copyright (C) 2024 University of Waikato, Hamilton, New Zealand
  */
 
 package adams.gui.flow.menu.git;
 
 import adams.core.git.GitSettingsHelper;
-import adams.core.io.FileUtils;
 import adams.gui.action.AbstractBaseAction;
 import adams.gui.core.GUIHelper;
 import adams.gui.flow.FlowPanelNotificationArea.NotificationType;
-import org.eclipse.jgit.api.Status;
-import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.api.PullCommand;
+import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.transport.SshTransport;
 
 import javax.swing.SwingWorker;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.util.logging.Level;
 
 /**
- * Performs a "git commit".
+ * Performs a "git pull".
  *
  * @author fracpete (fracpete at waikato dot ac dot nz)
  */
-public class Commit
+public class Pull
   extends AbstractFlowEditorGitMenuItem {
 
   private static final long serialVersionUID = -2869403192412073396L;
@@ -50,40 +49,27 @@ public class Commit
    */
   @Override
   protected AbstractBaseAction newAction() {
-    return new AbstractBaseAction("Commit...", "save") {
+    return new AbstractBaseAction("Pull", "arrow_skip_down") {
       @Override
       protected void doActionPerformed(ActionEvent e) {
-	String relPath = FileUtils.relativePath(m_Git.getRepository().getWorkTree(), m_Owner.getCurrentFile());
-	String msg = GUIHelper.showInputDialog(m_Owner, "Commit message for " + m_Owner.getCurrentFile().getName() + ":");
-	if (msg == null)
-	  return;
-	String user = GitSettingsHelper.getSingleton().getUser();
-	if (user.isEmpty())
-	  user = GUIHelper.showInputDialog(m_Owner, "Please enter user for commit:");
-	if (user == null)
-	  return;
-	String email = GitSettingsHelper.getSingleton().getEmail();
-	if (email.isEmpty())
-	  email = GUIHelper.showInputDialog(m_Owner, "Please enter email for commit:");
-	if (email == null)
-	  return;
-	final String fUser = user;
-	final String fEmail = email;
 	SwingWorker worker = new SwingWorker() {
 	  @Override
 	  protected Object doInBackground() throws Exception {
 	    try {
-	      RevCommit result = m_Git.commit()
-		.setOnly(relPath)
-		.setCommitter(fUser, fEmail)
-		.setMessage(msg)
-		.call();
+	      PullCommand cmd = m_Git.pull();
+	      String url = m_Git.getRepository().getConfig().getString("remote", "origin", "url");
+	      // do we need ssh key?
+	      if (url.startsWith("git@")) {
+		cmd.setTransportConfigCallback(transport -> ((SshTransport) transport).setSshSessionFactory(
+		  GitSettingsHelper.getSingleton().getSshdSessionFactory()));
+	      }
+	      PullResult result = cmd.call();
 	      getLogger().info(result.toString());
 	      getOwner().getCurrentPanel().showNotification(result.toString(), NotificationType.INFO);
 	    }
 	    catch (Exception ex) {
-	      getLogger().log(Level.SEVERE, "Failed to commit: " + relPath, e);
-	      GUIHelper.showErrorMessage(m_Owner, "Failed to commit:\n" + relPath, ex);
+	      getLogger().log(Level.SEVERE, "Failed to pull: " + m_Git.getRepository().getWorkTree(), e);
+	      GUIHelper.showErrorMessage(m_Owner, "Failed to pull: " + m_Git.getRepository().getWorkTree(), ex);
 	    }
 	    return null;
 	  }
@@ -98,23 +84,6 @@ public class Commit
    */
   @Override
   public void update() {
-    Status 	status;
-    File 	file;
-    String 	relPath;
-
-    file    = m_Owner.getCurrentFile();
-    relPath = FileUtils.relativePath(m_Git.getRepository().getWorkTree(), file);
-    try {
-      status = m_Git.status()
-		 .addPath(relPath)
-		 .call();
-      m_Action.setEnabled(
-	status.getModified().contains(relPath)
-	  || status.getAdded().contains(relPath));
-    }
-    catch (Exception e) {
-      m_Action.setEnabled(false);
-      getLogger().log(Level.SEVERE, "Failed to query status of repo!", e);
-    }
+    m_Action.setEnabled(m_Git != null);
   }
 }

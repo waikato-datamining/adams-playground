@@ -20,8 +20,11 @@
 
 package adams.gui.flow.menu.git;
 
+import adams.core.logging.LoggingHelper;
 import adams.gui.flow.menu.AbstractFlowEditorMenuItem;
 import org.eclipse.jgit.api.Git;
+
+import java.util.logging.Level;
 
 /**
  * Ancestor for menuitems in the git sub-menu.
@@ -35,6 +38,16 @@ public abstract class AbstractFlowEditorGitMenuItem
 
   /** the current git instance to use. */
   protected Git m_Git;
+
+  /**
+   * Initializes the menu item.
+   */
+  @Override
+  protected void initialize() {
+    super.initialize();
+    if (!LoggingHelper.isAtLeast(getLogger(), Level.INFO))
+      getLogger().setLevel(Level.INFO);
+  }
 
   /**
    * Returns the name of the menu to list this item under.

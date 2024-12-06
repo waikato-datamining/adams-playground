@@ -31,3 +31,7 @@ Email=
 # The default logging level for git operations
 # (OFF|SEVERE|WARNING|INFO|CONFIG|FINE|FINER|FINEST)
 LoggingLevel=INFO
+
+# Whether to enable git support in the Flow editor
+# (true|false)
+FlowEditorSupport=false

@@ -23,6 +23,7 @@ package adams.gui.flow.menu;
 import adams.core.ClassLister;
 import adams.core.Utils;
 import adams.core.git.GitSession;
+import adams.core.git.GitSettingsHelper;
 import adams.gui.action.AbstractBaseAction;
 import adams.gui.core.ImageManager;
 import adams.gui.flow.FlowEditorPanel;
@@ -74,7 +75,7 @@ public class GitSubMenu
    */
   @Override
   public boolean hasSubMenu() {
-    return true;
+    return GitSettingsHelper.getSingleton().getFlowEditorSupport();
   }
 
   /**
@@ -85,6 +86,9 @@ public class GitSubMenu
   @Override
   protected JMenu newSubMenu() {
     AbstractFlowEditorGitMenuItem	menuitem;
+
+    if (!GitSettingsHelper.getSingleton().getFlowEditorSupport())
+      return null;
 
     m_SubMenu = new JMenu("Git");
     m_SubMenu.setIcon(ImageManager.getIcon("git"));
@@ -124,6 +128,9 @@ public class GitSubMenu
   @Override
   public void update() {
     Git		git;
+
+    if (!GitSettingsHelper.getSingleton().getFlowEditorSupport())
+      return;
 
     m_SubMenu.setEnabled(
       (m_Owner != null)

@@ -44,6 +44,7 @@ public class GitSettingsPanel
     addPropertyType("User", PropertyType.STRING);
     addPropertyType("Email", PropertyType.STRING);
     addPropertyType("LoggingLevel", PropertyType.LIST);
+    addPropertyType("FlowEditorSupport", PropertyType.BOOLEAN);
     setList("LoggingLevel", new String[]{"OFF", "SEVERE", "WARNING", "INFO", "CONFIG", "FINE", "FINER", "FINEST"});
     setPropertyOrder(new String[]{
       "SshDir",
@@ -51,6 +52,7 @@ public class GitSettingsPanel
       "User",
       "Email",
       "LoggingLevel",
+      "FlowEditorSupport",
     });
     setPreferences(Environment.getInstance().read(GitDefinition.KEY));
   }

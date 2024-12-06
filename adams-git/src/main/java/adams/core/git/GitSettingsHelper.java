@@ -54,6 +54,9 @@ public class GitSettingsHelper {
   /** the logging level. */
   public final static String LOGGING_LEVEL = "LoggingLevel";
 
+  /** the flow editor support. */
+  public final static String FLOW_EDITOR_SUPPORT = "FlowEditorSupport";
+
   /** the singleton. */
   protected static GitSettingsHelper m_Singleton;
 
@@ -276,6 +279,25 @@ public class GitSettingsHelper {
     catch (Exception e) {
       m_Properties = new Properties();
     }
+  }
+
+  /**
+   * Returns whether to enable git support in the flow editor.
+   *
+   * @return		true if to enable support
+   */
+  public boolean getFlowEditorSupport() {
+    return m_Properties.getBoolean(FLOW_EDITOR_SUPPORT, false);
+  }
+
+  /**
+   * Updates whether to enable git support in the flow editor.
+   *
+   * @param value	true if to enable support
+   */
+  public void setFlowEditorSupport(boolean value) {
+    m_Modified = true;
+    m_Properties.setBoolean(FLOW_EDITOR_SUPPORT, value);
   }
 
   /**

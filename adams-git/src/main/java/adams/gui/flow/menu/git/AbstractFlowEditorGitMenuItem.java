@@ -95,4 +95,13 @@ public abstract class AbstractFlowEditorGitMenuItem
 
     return cmd;
   }
+
+  /**
+   * Checks whether the repository has a remote URL.
+   *
+   * @return		true if remote URL available
+   */
+  protected boolean isRemoteRepo() {
+    return (m_Git.getRepository().getConfig().getString("remote", "origin", "url") != null);
+  }
 }

@@ -85,6 +85,6 @@ public class Push
    */
   @Override
   public void update() {
-    m_Action.setEnabled(m_Git != null);
+    m_Action.setEnabled((m_Git != null) && isRemoteRepo());
   }
 }

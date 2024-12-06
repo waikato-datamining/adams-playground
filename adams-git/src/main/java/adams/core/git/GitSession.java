@@ -181,7 +181,7 @@ public class GitSession
     result = m_Passwords.get(uri);
 
     if (result == null) {
-      password = GUIHelper.showPasswordDialog(null);
+      password = GUIHelper.showPasswordDialog(null, null, "SSH key:\n" + uri);
       if (password != null)
 	setPassword(uri, password.getValue().toCharArray());
       result = getPassword(uri);

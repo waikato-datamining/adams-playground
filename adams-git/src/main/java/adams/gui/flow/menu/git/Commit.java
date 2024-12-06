@@ -51,6 +51,7 @@ public class Commit
   @Override
   protected AbstractBaseAction newAction() {
     return new AbstractBaseAction("Commit...", "save") {
+      private static final long serialVersionUID = 5856785085545656193L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
 	String relPath = FileUtils.relativePath(m_Git.getRepository().getWorkTree(), m_Owner.getCurrentFile());

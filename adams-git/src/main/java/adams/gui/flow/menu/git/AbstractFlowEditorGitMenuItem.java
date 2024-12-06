@@ -20,11 +20,14 @@
 
 package adams.gui.flow.menu.git;
 
+import adams.core.git.GitSession;
 import adams.core.git.GitSettingsHelper;
 import adams.core.logging.LoggingHelper;
 import adams.core.logging.LoggingLevel;
 import adams.gui.flow.menu.AbstractFlowEditorMenuItem;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.TransportCommand;
+import org.eclipse.jgit.transport.SshTransport;
 
 /**
  * Ancestor for menuitems in the git sub-menu.
@@ -71,5 +74,25 @@ public abstract class AbstractFlowEditorGitMenuItem
   public void update(Git git) {
     m_Git = git;
     update();
+  }
+
+  /**
+   * Adds the transport config callback (with sshd factory) if necessary.
+   * If the remote url starts with "git@", then we assume that ssh keys are used.
+   *
+   * @param cmd		the command to update
+   * @return		the updated command
+   */
+  protected <T  extends TransportCommand> T setTransportConfigCallbackIfNecessary(T cmd) {
+    String 	url;
+
+    url = m_Git.getRepository().getConfig().getString("remote", "origin", "url");
+    // do we need ssh key?
+    if ((url != null) && url.startsWith("git@")) {
+      cmd.setTransportConfigCallback(transport -> ((SshTransport) transport).setSshSessionFactory(
+	GitSession.getSingleton().getSshdSessionFactory()));
+    }
+
+    return cmd;
   }
 }

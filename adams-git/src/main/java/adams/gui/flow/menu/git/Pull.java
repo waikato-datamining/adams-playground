@@ -20,13 +20,11 @@
 
 package adams.gui.flow.menu.git;
 
-import adams.core.git.GitSession;
 import adams.gui.action.AbstractBaseAction;
 import adams.gui.core.GUIHelper;
 import adams.gui.flow.FlowPanelNotificationArea.NotificationType;
 import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PullResult;
-import org.eclipse.jgit.transport.SshTransport;
 
 import javax.swing.SwingWorker;
 import java.awt.event.ActionEvent;
@@ -50,19 +48,14 @@ public class Pull
   @Override
   protected AbstractBaseAction newAction() {
     return new AbstractBaseAction("Pull", "arrow_skip_down") {
+      private static final long serialVersionUID = -242442630510447880L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
 	SwingWorker worker = new SwingWorker() {
 	  @Override
 	  protected Object doInBackground() throws Exception {
 	    try {
-	      PullCommand cmd = m_Git.pull();
-	      String url = m_Git.getRepository().getConfig().getString("remote", "origin", "url");
-	      // do we need ssh key?
-	      if (url.startsWith("git@")) {
-		cmd.setTransportConfigCallback(transport -> ((SshTransport) transport).setSshSessionFactory(
-		  GitSession.getSingleton().getSshdSessionFactory()));
-	      }
+	      PullCommand cmd = setTransportConfigCallbackIfNecessary(m_Git.pull());
 	      PullResult result = cmd.call();
 	      getLogger().info(result.toString());
 	      getOwner().getCurrentPanel().showNotification(result.toString(), NotificationType.INFO);

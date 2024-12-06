@@ -48,6 +48,7 @@ public class Add
   @Override
   protected AbstractBaseAction newAction() {
     return new AbstractBaseAction("Add", "add") {
+      private static final long serialVersionUID = -7027399409999957965L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
 	SwingWorker worker = new SwingWorker() {

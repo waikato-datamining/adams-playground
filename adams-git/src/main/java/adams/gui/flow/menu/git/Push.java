@@ -20,14 +20,12 @@
 
 package adams.gui.flow.menu.git;
 
-import adams.core.git.GitSession;
 import adams.gui.action.AbstractBaseAction;
 import adams.gui.core.GUIHelper;
 import adams.gui.flow.FlowPanelNotificationArea.NotificationType;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
-import org.eclipse.jgit.transport.SshTransport;
 
 import javax.swing.SwingWorker;
 import java.awt.event.ActionEvent;
@@ -51,19 +49,14 @@ public class Push
   @Override
   protected AbstractBaseAction newAction() {
     return new AbstractBaseAction("Push", "arrow_skip_up") {
+      private static final long serialVersionUID = -4944415938899438767L;
       @Override
       protected void doActionPerformed(ActionEvent e) {
 	SwingWorker worker = new SwingWorker() {
 	  @Override
 	  protected Object doInBackground() throws Exception {
 	    try {
-	      PushCommand cmd = m_Git.push();
-	      String url = m_Git.getRepository().getConfig().getString("remote", "origin", "url");
-	      // do we need ssh key?
-	      if (url.startsWith("git@")) {
-		cmd.setTransportConfigCallback(transport -> ((SshTransport) transport).setSshSessionFactory(
-		  GitSession.getSingleton().getSshdSessionFactory()));
-	      }
+	      PushCommand cmd = setTransportConfigCallbackIfNecessary(m_Git.push());
 	      Iterable<PushResult> results = cmd.call();
 	      StringBuilder combined = new StringBuilder();
 	      for (PushResult result: results) {

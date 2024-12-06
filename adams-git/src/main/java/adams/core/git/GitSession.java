@@ -69,6 +69,7 @@ public class GitSession
     m_Repos      = new HashMap<>();
     m_Controlled = new HashMap<>();
     m_Passwords  = new HashMap<>();
+    setLoggingLevel(GitSettingsHelper.getSingleton().getLoggingLevel());
   }
 
   /**
@@ -161,7 +162,7 @@ public class GitSession
    * Returns the password for the ssh key.
    *
    * @param uri		the URI of the ssh key
-   * @return		the key or null if none stored yet
+   * @return		the password or null if none stored yet
    */
   public char[] getPassword(URIish uri) {
     return m_Passwords.get(uri);
@@ -186,7 +187,7 @@ public class GitSession
       result = getPassword(uri);
     }
 
-    return result;
+    return result.clone();
   }
 
   /**
@@ -203,7 +204,11 @@ public class GitSession
 	     .setKeyPasswordProvider(cp -> new IdentityPasswordProvider(cp) {
 	       @Override
 	       protected char[] getPassword(URIish uri, String message) {
-		 return GitSession.getSingleton().getPasswordOrPrompt(uri);
+		 getLogger().info("Key password provider for URI: " + uri);
+		 char[] result = GitSession.getSingleton().getPasswordOrPrompt(uri);
+		 if (result != null)
+		   result = result.clone();   // in case it gets zeroed
+		 return result;
 	       }
 	     }).build(null);
   }

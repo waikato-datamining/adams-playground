@@ -53,7 +53,7 @@
 \end{titlepage}
 
 \tableofcontents
-%\listoffigures
+\listoffigures
 %\listoftables
 
 
@@ -61,6 +61,31 @@
 \chapter{Introduction}
 \textit{git} is an is a free and open source distributed version control system designed to handle everything
 from small to very large projects with speed and efficiency\cite{git}.
+
+\section{Preferences}
+The \textit{Git} section in the global preferences (see Figure \ref{preferences}) allows you to modify
+the git support within ADAMS.
+
+\noindent Some notes:
+\begin{tight_itemize}
+    \item \textit{SshDir} - where to find your ssh keys
+    \item \textit{KnownHosts} - the file that lists the public keys of your known hosts
+    \item \textit{User} and \textit{Email} can be used to override the settings from your \texttt{.gitconfig} file.
+    \item \textit{LoggingLevel} - whether you want to see any logging output
+    \item \textit{FlowEditorSupport} - if ticked, gives you the ability to add, commit, pull and push in the
+    Flow editor (File $\rightarrow$ Git)
+\end{tight_itemize}
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=12.0cm]{images/preferences.png}
+  \caption{Git preferences}
+  \label{preferences}
+\end{figure}
+
+
+\section{Flow editor}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \input{bibliography}

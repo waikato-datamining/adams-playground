@@ -70,10 +70,9 @@ the git support within ADAMS.
 \begin{tight_itemize}
     \item \textit{SshDir} - where to find your ssh keys
     \item \textit{KnownHosts} - the file that lists the public keys of your known hosts
-    \item \textit{User} and \textit{Email} can be used to override the settings from your \texttt{.gitconfig} file.
+    \item \textit{User} and \textit{Email} can be used to override the settings from your \texttt{.gitconfig} file\cite{git-config}.
     \item \textit{LoggingLevel} - whether you want to see any logging output
-    \item \textit{FlowEditorSupport} - if ticked, gives you the ability to add, commit, pull and push in the
-    Flow editor (File $\rightarrow$ Git)
+    \item \textit{FlowEditorSupport} - if ticked, enables a \textit{Git} sub-menu in the Flow editor
 \end{tight_itemize}
 
 \begin{figure}[htb]
@@ -85,6 +84,19 @@ the git support within ADAMS.
 
 
 \section{Flow editor}
+With support enabled in the global \textit{Preferences} (off by default), you get the following
+additional sub-menu in the Flow editor: \textit{File $\rightarrow$ Git}
+
+Assuming that your flows are being saved in a directory structure that is part of a git
+repository (local or clone from remote), then you can do the following:
+\begin{tight_itemize}
+    \item \textit{Add} -- adds the flow to the files that are being tracked by git
+    \item \textit{Commit} -- prompts you to enter a message to associate the commit of this flow;
+    if \textit{User} or \textit{Email} have not been defined, then you will get prompted
+    for these as well (see \cite{git-config})
+    \item \textit{Pull} -- allows pulling in changes from the remote origin (not enabled for local repositories)
+    \item \textit{Push} -- allows pushing out your changes to the remote origin (not enabled for local repositories)
+\end{tight_itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

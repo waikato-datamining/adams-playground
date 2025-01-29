@@ -43,7 +43,7 @@
   </developers>
 
   <properties>
-    <djl.version>0.29.0</djl.version>
+    <djl.version>0.31.1</djl.version>
   </properties>
 
   <dependencies>

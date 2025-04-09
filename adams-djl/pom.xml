@@ -42,10 +42,6 @@
     </developer>
   </developers>
 
-  <properties>
-    <djl.version>0.31.1</djl.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -67,6 +63,7 @@
       <type>test-jar</type>
     </dependency>
 
+    <!-- djl -->
     <dependency>
       <groupId>ai.djl</groupId>
       <artifactId>api</artifactId>
@@ -74,8 +71,21 @@
     </dependency>
 
     <dependency>
+      <groupId>ai.djl</groupId>
+      <artifactId>model-zoo</artifactId>
+      <version>${djl.version}</version>
+    </dependency>
+
+    <!-- pytorch -->
+    <dependency>
       <groupId>ai.djl.pytorch</groupId>
       <artifactId>pytorch-engine</artifactId>
+      <version>${djl.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ai.djl.pytorch</groupId>
+      <artifactId>pytorch-model-zoo</artifactId>
       <version>${djl.version}</version>
     </dependency>
   </dependencies>

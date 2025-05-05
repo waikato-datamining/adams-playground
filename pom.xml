@@ -28,6 +28,6 @@
   </properties>
 
   <modules>
-    <module>adams-djl</module>
+    <module>adams-djl-test</module>
   </modules>
 </project>

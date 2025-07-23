@@ -29,5 +29,6 @@
 
   <modules>
     <module>adams-djl-test</module>
+    <module>adams-dropwizard</module>
   </modules>
 </project>

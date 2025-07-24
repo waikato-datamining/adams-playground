@@ -65,12 +65,6 @@
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-core</artifactId>
       <version>${adams.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -79,24 +73,12 @@
       <version>${adams.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-event</artifactId>
       <version>${adams.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -111,12 +93,6 @@
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-net</artifactId>
       <version>${adams.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -131,12 +107,6 @@
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-json</artifactId>
       <version>${adams.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -151,12 +121,6 @@
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-webservice-core</artifactId>
       <version>${adams.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>

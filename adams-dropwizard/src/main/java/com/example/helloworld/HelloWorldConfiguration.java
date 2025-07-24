@@ -11,6 +11,14 @@ public class HelloWorldConfiguration extends Configuration {
   @NotEmpty
   private String defaultName = "Stranger";
 
+//  public HelloWorldConfiguration() {
+//    HttpConnectorFactory http = new HttpConnectorFactory();
+//    http.setPort(8080);
+//    if (getServerFactory() instanceof DefaultServerFactory) {
+//      ((DefaultServerFactory) getServerFactory()).setApplicationConnectors(List.of(http));
+//    }
+//  }
+
   @JsonProperty
   public String getTemplate() {
     return template;

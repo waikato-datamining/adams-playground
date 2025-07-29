@@ -30,6 +30,6 @@
 
   <modules>
     <module>adams-djl-test</module>
-    <module>adams-dropwizard</module>
+    <module>adams-dropwizard-test</module>
   </modules>
 </project>
